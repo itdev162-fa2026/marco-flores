@@ -1,7 +1,24 @@
 using Persistence;
-
+using Stripe;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure Stripe API key
+StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
+
+// Add CORS services
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:5173")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
 
 // Add CORS services
 builder.Services.AddCors(options =>
