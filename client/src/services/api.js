@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:5116';
+const API_BASE_URL = 'http://localhost:5116/api';
 
 export const getProducts = async () => {
   try {
@@ -35,6 +35,8 @@ export const searchProducts = async (searchTerm) => {
     const url = searchTerm
       ? `${API_BASE_URL}/products/search?name=${encodeURIComponent(searchTerm)}`
       : `${API_BASE_URL}/products`;
+      
+      console.log("FETCHING:", url);
 
     const response = await fetch(url);
 
@@ -49,39 +51,44 @@ export const searchProducts = async (searchTerm) => {
   }
 };
 
-// Create order
-export const createOrder = async (customerEmail, cartItems) => {
+// Create Stripe checkout session
+export const createCheckoutSession = async (customerEmail, cartItems) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/orders`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        customerEmail,
-        items: cartItems.map((item) => ({
-          productId: item.product.id,
-          quantity: item.quantity,
-        })),
-      }),
-    });
+    const response = await fetch(
+      `${API_BASE_URL}/checkout/create-session`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          customerEmail,
+          items: cartItems.map((item) => ({
+            productId: item.product.id,
+            quantity: item.quantity,
+          })),
+        }),
+      }
+    );
 
     if (!response.ok) {
       const error = await response.text();
-      throw new Error(error || "Failed to create order");
+      throw new Error(error || "Failed to create checkout session");
     }
 
     return await response.json();
   } catch (error) {
-    console.error("Error creating order:", error);
+    console.error("Error creating checkout session:", error);
     throw error;
   }
 };
 
-// Get order by ID
-export const getOrderById = async (orderId) => {
+// Get order by Stripe session ID
+export const getOrderBySessionId = async (sessionId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/orders/${orderId}`);
+    const response = await fetch(
+      `${API_BASE_URL}/orders/session/${sessionId}`
+    );
 
     if (!response.ok) {
       throw new Error("Failed to fetch order");
@@ -93,4 +100,5 @@ export const getOrderById = async (orderId) => {
     throw error;
   }
 };
+
 
