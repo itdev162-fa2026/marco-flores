@@ -1,8 +1,8 @@
-const API_BASE_URL = 'http://localhost:5116/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ||  'http://localhost:5116';
 
 export const getProducts = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/products`);
+    const response = await fetch(`${API_BASE_URL}/api/products`);
 
     if (!response.ok) {
       throw new Error('Failed to fetch products');
@@ -17,7 +17,7 @@ export const getProducts = async () => {
 
 export const getProductById = async (id) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/products/${id}`);
+    const response = await fetch(`${API_BASE_URL}/api/products/${id}`);
 
     if (!response.ok) {
       throw new Error('Failed to fetch product');
@@ -33,8 +33,8 @@ export const getProductById = async (id) => {
 export const searchProducts = async (searchTerm) => {
   try {
     const url = searchTerm
-      ? `${API_BASE_URL}/products/search?name=${encodeURIComponent(searchTerm)}`
-      : `${API_BASE_URL}/products`;
+      ? `${API_BASE_URL}/api/products/search?name=${encodeURIComponent(searchTerm)}`
+      : `${API_BASE_URL}/api/products`;
       
       console.log("FETCHING:", url);
 
@@ -55,7 +55,7 @@ export const searchProducts = async (searchTerm) => {
 export const createCheckoutSession = async (customerEmail, cartItems) => {
   try {
     const response = await fetch(
-      `${API_BASE_URL}/checkout/create-session`,
+      `${API_BASE_URL}/api/checkout/create-session`,
       {
         method: "POST",
         headers: {
@@ -87,7 +87,7 @@ export const createCheckoutSession = async (customerEmail, cartItems) => {
 export const getOrderBySessionId = async (sessionId) => {
   try {
     const response = await fetch(
-      `${API_BASE_URL}/orders/session/${sessionId}`
+      `${API_BASE_URL}/api/orders/session/${sessionId}`
     );
 
     if (!response.ok) {
